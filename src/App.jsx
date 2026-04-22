@@ -2,6 +2,7 @@ import { useState, useEffect } from "react"
 import axios from "axios"
 import Header from "./components/Header"
 import LeadList from "./components/LeadList"
+import LeadForm from "./components/LeadForm"
 
 const API_URL = "https://jsonplaceholder.typicode.com/users"
 const LS_KEY = "mini_crm_leads"
@@ -26,6 +27,8 @@ function mapApiToLead(user, index) {
 function App() {
   const [leads, setLeads] = useState([])
   const [loading, setLoading] = useState(true)
+  const [showForm, setShowForm] = useState(false)
+  const [editingLead, setEditingLead] = useState(null)
 
   useEffect(() => {
     // Check localStorage first
@@ -57,20 +60,64 @@ function App() {
     }
   }, [leads])
 
-  // Edit handler — placeholder for now
-  const handleEdit = (lead) => {
-    console.log("Edit clicked:", lead)
+  // Open form for adding
+  const handleAddClick = () => {
+    setEditingLead(null)
+    setShowForm(true)
   }
 
-  // Delete handler
+  // Open form for editing
+  const handleEdit = (lead) => {
+    setEditingLead(lead)
+    setShowForm(true)
+  }
+   // Close form
+  const handleClose = () => {
+    setShowForm(false)
+    setEditingLead(null)
+  }
+  // Save — handles both add and edit
+  const handleSave = (formData) => {
+    if (editingLead) {
+      // Edit mode — update existing lead
+      const updated = leads.map((lead) =>
+        lead.id === editingLead.id
+          ? { ...lead, ...formData }
+          : lead
+      )
+      setLeads(updated)
+    } else {
+      // Add mode — create new lead
+      const newLead = {
+        ...formData,
+        id: Date.now().toString(),
+        createdAt: new Date().toISOString()
+      }
+      setLeads([newLead, ...leads])
+    }
+    handleClose()
+  }
+
+  // Delete
   const handleDelete = (id) => {
     const updated = leads.filter((lead) => lead.id !== id)
     setLeads(updated)
   }
 
-  return (
+ return (
     <div>
       <Header totalLeads={leads.length} />
+
+      <button onClick={handleAddClick}>+ Add Lead</button>
+
+      {showForm && (
+        <LeadForm
+          editingLead={editingLead}
+          onSave={handleSave}
+          onClose={handleClose}
+        />
+      )}
+
       {loading ? (
         <p>Loading leads...</p>
       ) : (
