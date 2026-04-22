@@ -27,8 +27,9 @@ function mapApiToLead(user, index) {
 function App() {
   const [leads, setLeads] = useState([])
   const [loading, setLoading] = useState(true)
-  const [showForm, setShowForm] = useState(false)
-  const [editingLead, setEditingLead] = useState(null)
+  const [deleteConfirmId, setDeleteConfirmId] = useState(null)
+  const [showForm, setShowForm] = useState(false)        // ← added
+  const [editingLead, setEditingLead] = useState(null)   // ← added
 
   useEffect(() => {
     // Check localStorage first
@@ -55,27 +56,29 @@ function App() {
   }, []) // empty array means this runs only once on first load
 
   useEffect(() => {
-    if (!loading) {
+    if (!loading && leads.length >= 0) {
       localStorage.setItem(LS_KEY, JSON.stringify(leads))
     }
-  }, [leads])
+  }, [leads, loading])
 
   // Open form for adding
   const handleAddClick = () => {
-    setEditingLead(null)
-    setShowForm(true)
+    setEditingLead(null)   // empty form
+    setShowForm(true)      // show form
   }
 
   // Open form for editing
   const handleEdit = (lead) => {
-    setEditingLead(lead)
-    setShowForm(true)
+    setEditingLead(lead)   // pre-fill form with lead data
+    setShowForm(true)      // show form
   }
-   // Close form
+
+  // Close form
   const handleClose = () => {
     setShowForm(false)
     setEditingLead(null)
   }
+
   // Save — handles both add and edit
   const handleSave = (formData) => {
     if (editingLead) {
@@ -98,18 +101,31 @@ function App() {
     handleClose()
   }
 
-  // Delete
-  const handleDelete = (id) => {
-    const updated = leads.filter((lead) => lead.id !== id)
-    setLeads(updated)
+  // Step 1 — user clicks Delete button, show confirmation
+  const handleDeleteClick = (id) => {
+    setDeleteConfirmId(id)
   }
 
- return (
+  // Step 2 — user clicks Confirm, actually delete the lead
+  const handleDeleteConfirm = () => {
+    const updated = leads.filter((lead) => lead.id !== deleteConfirmId)
+    setLeads(updated)
+    setDeleteConfirmId(null)
+  }
+
+  // Step 3 — user clicks Cancel, close confirmation
+  const handleDeleteCancel = () => {
+    setDeleteConfirmId(null)
+  }
+
+  return (
     <div>
       <Header totalLeads={leads.length} />
 
+      {/* Add Lead Button */}
       <button onClick={handleAddClick}>+ Add Lead</button>
 
+      {/* Add / Edit Form */}
       {showForm && (
         <LeadForm
           editingLead={editingLead}
@@ -118,13 +134,22 @@ function App() {
         />
       )}
 
+      {/* Delete Confirmation */}
+      {deleteConfirmId && (
+        <div>
+          <p>Are you sure you want to delete this lead? This cannot be undone.</p>
+          <button onClick={handleDeleteCancel}>Cancel</button>
+          <button onClick={handleDeleteConfirm}>Yes, Delete</button>
+        </div>
+      )}
+
       {loading ? (
         <p>Loading leads...</p>
       ) : (
         <LeadList
           leads={leads}
           onEdit={handleEdit}
-          onDelete={handleDelete}
+          onDelete={handleDeleteClick}
         />
       )}
     </div>
