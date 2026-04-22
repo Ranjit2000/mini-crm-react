@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react"
 import axios from "axios"
+import Header from "./components/Header"
+import LeadList from "./components/LeadList"
 
 const API_URL = "https://jsonplaceholder.typicode.com/users"
 const LS_KEY = "mini_crm_leads"
@@ -34,7 +36,6 @@ function App() {
       setLoading(false)
       return
     }
-
     // No data in localStorage — fetch from API
     axios.get(API_URL)
       .then((response) => {
@@ -56,12 +57,28 @@ function App() {
     }
   }, [leads])
 
+  // Edit handler — placeholder for now
+  const handleEdit = (lead) => {
+    console.log("Edit clicked:", lead)
+  }
+
+  // Delete handler
+  const handleDelete = (id) => {
+    const updated = leads.filter((lead) => lead.id !== id)
+    setLeads(updated)
+  }
+
   return (
     <div>
+      <Header totalLeads={leads.length} />
       {loading ? (
         <p>Loading leads...</p>
       ) : (
-        <p>Leads loaded: {leads.length}</p>
+        <LeadList
+          leads={leads}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+        />
       )}
     </div>
   )
