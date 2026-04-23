@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import axios from "axios"
 import Header from "./components/Header"
 import LeadList from "./components/LeadList"
 import LeadForm from "./components/LeadForm"
+import SearchFilter from "./components/SearchFilter"
 
 const API_URL = "https://jsonplaceholder.typicode.com/users"
 const LS_KEY = "mini_crm_leads"
@@ -30,6 +31,8 @@ function App() {
   const [deleteConfirmId, setDeleteConfirmId] = useState(null)
   const [showForm, setShowForm] = useState(false)        // ← added
   const [editingLead, setEditingLead] = useState(null)   // ← added
+  const [search, setSearch] = useState("")
+  const [filterStatus, setFilterStatus] = useState("")
 
   useEffect(() => {
     // Check localStorage first
@@ -60,6 +63,28 @@ function App() {
       localStorage.setItem(LS_KEY, JSON.stringify(leads))
     }
   }, [leads, loading])
+
+  // useMemo — only recalculates when leads, search or filterStatus changes
+  const filteredLeads = useMemo(() => {
+
+    const query = search.toLowerCase()
+
+    return leads.filter((lead) => {
+
+      // Check if name or company matches search text
+      const matchesSearch =
+        lead.name.toLowerCase().includes(query) ||
+        lead.company.toLowerCase().includes(query)
+
+      // Check if status matches selected filter
+      const matchesStatus =
+        filterStatus === "" || lead.status === filterStatus
+
+      // Lead must match BOTH conditions
+      return matchesSearch && matchesStatus
+    })
+
+  }, [leads, search, filterStatus])
 
   // Open form for adding
   const handleAddClick = () => {
@@ -125,6 +150,14 @@ function App() {
       {/* Add Lead Button */}
       <button onClick={handleAddClick}>+ Add Lead</button>
 
+      {/* Search and Filter */}
+      <SearchFilter
+        search={search}
+        filterStatus={filterStatus}
+        onSearchChange={setSearch}
+        onFilterChange={setFilterStatus}
+      />
+
       {/* Add / Edit Form */}
       {showForm && (
         <LeadForm
@@ -147,7 +180,7 @@ function App() {
         <p>Loading leads...</p>
       ) : (
         <LeadList
-          leads={leads}
+          leads={filteredLeads}
           onEdit={handleEdit}
           onDelete={handleDeleteClick}
         />
