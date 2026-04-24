@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react"
+import "./LeadForm.css"
 
 const LEAD_SOURCES = ["Website", "Referral", "LinkedIn", "Other"]
 const LEAD_STATUSES = ["New", "Contacted", "Follow-up", "Converted", "Lost"]
@@ -10,16 +11,16 @@ const EMPTY_FORM = {
   company: "",
   source: "",
   status: "New",
-  notes: ""
+  notes: "",
+  followUpDate: ""  // ← bonus: follow-up reminder field
 }
 
 function validate(form) {
   const errors = {}
 
-// Name — just checks it's not empty
   if (!form.name.trim())
     errors.name = "Name is required"
-// Email — checks not empty AND valid format
+
   if (!form.email.trim())
     errors.email = "Email is required"
   else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))
@@ -85,106 +86,137 @@ function LeadForm({ editingLead, onSave, onClose }) {
   }
 
   return (
-    <div>
-      <h2>{editingLead ? "Edit Lead" : "Add New Lead"}</h2>
+    <div className="form-overlay">
+      <div className="form-box">
+        <h2 className="form-title">
+          {editingLead ? "Edit Lead" : "Add New Lead"}
+        </h2>
 
-      {/* Lead Name */}
-      <div>
-        <label>Lead Name *</label>
-        <input
-          name="name"
-          value={form.name}
-          onChange={handleChange}
-          placeholder="Full name"
-        />
-        {errors.name && <p>{errors.name}</p>}
+        <div className="form-grid">
+
+          {/* Lead Name */}
+          <div className="form-group">
+            <label className="form-label">Lead Name *</label>
+            <input
+              className={`form-input ${errors.name ? "input-error" : ""}`}
+              name="name"
+              value={form.name}
+              onChange={handleChange}
+              placeholder="Full name"
+            />
+            {errors.name && <p className="error-text">{errors.name}</p>}
+          </div>
+
+          {/* Email */}
+          <div className="form-group">
+            <label className="form-label">Email *</label>
+            <input
+              className={`form-input ${errors.email ? "input-error" : ""}`}
+              name="email"
+              value={form.email}
+              onChange={handleChange}
+              placeholder="email@example.com"
+            />
+            {errors.email && <p className="error-text">{errors.email}</p>}
+          </div>
+
+          {/* Phone */}
+          <div className="form-group">
+            <label className="form-label">Phone Number *</label>
+            <input
+              className={`form-input ${errors.phone ? "input-error" : ""}`}
+              name="phone"
+              value={form.phone}
+              onChange={handleChange}
+              placeholder="10 digit number"
+              maxLength={10}
+            />
+            {errors.phone && <p className="error-text">{errors.phone}</p>}
+          </div>
+
+          {/* Company */}
+          <div className="form-group">
+            <label className="form-label">Company Name *</label>
+            <input
+              className={`form-input ${errors.company ? "input-error" : ""}`}
+              name="company"
+              value={form.company}
+              onChange={handleChange}
+              placeholder="Company name"
+            />
+            {errors.company && <p className="error-text">{errors.company}</p>}
+          </div>
+
+          {/* Lead Source */}
+          <div className="form-group">
+            <label className="form-label">Lead Source *</label>
+            <select
+              className={`form-input ${errors.source ? "input-error" : ""}`}
+              name="source"
+              value={form.source}
+              onChange={handleChange}
+            >
+              <option value="">Select source</option>
+              {LEAD_SOURCES.map((s) => (
+                <option key={s} value={s}>{s}</option>
+              ))}
+            </select>
+            {errors.source && <p className="error-text">{errors.source}</p>}
+          </div>
+
+          {/* Lead Status */}
+          <div className="form-group">
+            <label className="form-label">Lead Status *</label>
+            <select
+              className={`form-input ${errors.status ? "input-error" : ""}`}
+              name="status"
+              value={form.status}
+              onChange={handleChange}
+            >
+              {LEAD_STATUSES.map((s) => (
+                <option key={s} value={s}>{s}</option>
+              ))}
+            </select>
+            {errors.status && <p className="error-text">{errors.status}</p>}
+          </div>
+
+          {/* Follow-up Reminder */}
+          <div className="form-group">
+            <label className="form-label">Follow-up Date (Optional)</label>
+            <input
+              className="form-input"
+              type="date"
+              name="followUpDate"
+              value={form.followUpDate || ""}
+              onChange={handleChange}
+            />
+          </div>
+
+          {/* Notes */}
+          <div className="form-group form-full">
+            <label className="form-label">Notes (Optional)</label>
+            <textarea
+              className="form-input form-textarea"
+              name="notes"
+              value={form.notes}
+              onChange={handleChange}
+              placeholder="Any additional notes"
+            />
+          </div>
+
+        </div>
+
+        {/* Buttons */}
+        <div className="form-footer">
+          <button className="btn-form-cancel" onClick={onClose}>
+            Cancel
+          </button>
+          <button className="btn-form-save" onClick={handleSubmit}>
+            {editingLead ? "Save Changes" : "Add Lead"}
+          </button>
+        </div>
+
       </div>
-
-      {/* Email */}
-      <div>
-        <label>Email *</label>
-        <input
-          name="email"
-          value={form.email}
-          onChange={handleChange}
-          placeholder="email@example.com"
-        />
-        {errors.email && <p>{errors.email}</p>}
-      </div>
-
-      {/* Phone */}
-      <div>
-        <label>Phone Number *</label>
-        <input
-          name="phone"
-          value={form.phone}
-          onChange={handleChange}
-          placeholder="10 digit number"
-          maxLength={10}
-        />
-        {errors.phone && <p>{errors.phone}</p>}
-      </div>
-
-      {/* Company */}
-      <div>
-        <label>Company Name *</label>
-        <input
-          name="company"
-          value={form.company}
-          onChange={handleChange}
-          placeholder="Company name"
-        />
-        {errors.company && <p>{errors.company}</p>}
-      </div>
-
-      {/* Lead Source */}
-      <div>
-        <label>Lead Source *</label>
-        <select
-          name="source"
-          value={form.source}
-          onChange={handleChange}
-        >
-          <option value="">Select source</option>
-          {LEAD_SOURCES.map((s) => (
-            <option key={s} value={s}>{s}</option>
-          ))}
-        </select>
-        {errors.source && <p>{errors.source}</p>}
-      </div>
-
-      {/* Lead Status */}
-      <div>
-        <label>Lead Status *</label>
-        <select
-          name="status"
-          value={form.status}
-          onChange={handleChange}
-        >
-          {LEAD_STATUSES.map((s) => (
-            <option key={s} value={s}>{s}</option>
-          ))}
-        </select>
-        {errors.status && <p>{errors.status}</p>}
-      </div>
-
-      {/* Notes */}
-      <div>
-        <label>Notes (Optional)</label>
-        <textarea
-          name="notes"
-          value={form.notes}
-          onChange={handleChange}
-          placeholder="Any additional notes"
-        />
-      </div>
-
-      {/* Buttons */}
-      <button onClick={onClose}>Cancel</button>
-      <button onClick={handleSubmit}>
-        {editingLead ? "Save Changes" : "Add Lead"}
-      </button>
-
     </div>
   )
 }

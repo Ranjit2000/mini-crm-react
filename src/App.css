@@ -1,0 +1,157 @@
+/* App Container */
+.app-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Main Content Area */
+.main-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 16px;
+  width: 100%;
+}
+
+/* Add Lead Button */
+.btn-add {
+  background-color: #2563eb;
+  color: white;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  display: inline-block;
+}
+
+.btn-add:hover {
+  background-color: #1d4ed8;
+}
+
+/* Delete Confirmation Box */
+.delete-confirm-box {
+  background: #fff5f5;
+  border: 1px solid #feb2b2;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.delete-confirm-box p {
+  color: #c53030;
+  font-weight: 500;
+}
+
+.btn-cancel-delete {
+  background: #e2e8f0;
+  color: #333;
+}
+
+.btn-cancel-delete:hover {
+  background: #cbd5e0;
+}
+
+.btn-confirm-delete {
+  background: #e53e3e;
+  color: white;
+  margin-left: 8px;
+}
+
+.btn-confirm-delete:hover {
+  background: #c53030;
+}
+
+/* Loading */
+.loading-text {
+  text-align: center;
+  padding: 40px;
+  color: #888;
+  font-size: 15px;
+}
+
+.btn-dark-mode {
+  background-color: #6b7280;
+  color: white;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  margin-left: 10px;
+}
+
+.btn-dark-mode:hover {
+  background-color: #4b5563;
+}
+
+/* Dark Mode Styles */
+.dark {
+  background-color: #111827;
+  color: #f9fafb;
+}
+
+.dark .main-content {
+  background-color: #111827;
+}
+
+.dark .table-wrapper {
+  background-color: #1f2937;
+  border-color: #374151;
+}
+
+.dark .leads-table thead {
+  background-color: #374151;
+}
+
+.dark .leads-table th {
+  color: #9ca3af;
+}
+
+.dark .leads-table td {
+  border-color: #374151;
+}
+
+.dark .leads-table tr:hover td {
+  background-color: #374151;
+}
+
+.dark .lead-name {
+  color: #f9fafb;
+}
+
+.dark .lead-email,
+.dark .lead-phone,
+.dark .lead-company {
+  color: #9ca3af;
+}
+
+.dark .search-input,
+.dark .filter-select {
+  background-color: #1f2937;
+  border-color: #374151;
+  color: #f9fafb;
+}
+
+.dark .delete-confirm-box {
+  background-color: #1f2937;
+  border-color: #374151;
+}
+
+.btn-export {
+  background-color: #059669;
+  color: white;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  margin-left: 10px;
+  display: inline-block;
+}
+
+.btn-export:hover {
+  background-color: #047857;
+}

@@ -1,8 +1,14 @@
+import "./Header.css"
+
 function Header({ totalLeads }) {
   return (
-    <header>
-      <h1>LeadFlow CRM</h1>
-      <span>{totalLeads} Leads</span>
+    <header className="header">
+      <div className="header-logo">
+        ◆ LeadFlow <span className="header-sub">CRM</span>
+      </div>
+      <div className="header-right">
+        <span className="lead-count">{totalLeads} Leads</span>
+      </div>
     </header>
   )
 }

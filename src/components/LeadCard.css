@@ -1,0 +1,72 @@
+.lead-name {
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 2px;
+}
+
+.lead-email {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.lead-phone {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.lead-company {
+  font-size: 13px;
+  color: #374151;
+}
+
+/* Status Badge */
+.status-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* Source Badge */
+.source-badge {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+}
+
+/* Action Buttons */
+.btn-edit {
+  background: #eff6ff;
+  color: #2563eb;
+  border: 1px solid #bfdbfe;
+  margin-right: 6px;
+  font-size: 12px;
+  padding: 5px 10px;
+}
+
+.btn-edit:hover {
+  background: #dbeafe;
+}
+
+.btn-delete {
+  background: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+  font-size: 12px;
+  padding: 5px 10px;
+}
+
+.btn-delete:hover {
+  background: #fee2e2;
+}
+
+.follow-up-date {
+  font-size: 11px;
+  color: #d97706;
+  margin-top: 3px;
+}

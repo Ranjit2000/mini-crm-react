@@ -4,6 +4,7 @@ import Header from "./components/Header"
 import LeadList from "./components/LeadList"
 import LeadForm from "./components/LeadForm"
 import SearchFilter from "./components/SearchFilter"
+import "./App.css"
 
 const API_URL = "https://jsonplaceholder.typicode.com/users"
 const LS_KEY = "mini_crm_leads"
@@ -21,6 +22,7 @@ function mapApiToLead(user, index) {
     source: LEAD_SOURCES[index % LEAD_SOURCES.length],
     status: LEAD_STATUSES[index % LEAD_STATUSES.length],
     notes: "",
+    followUpDate: "",
     createdAt: new Date().toISOString()
   }
 }
@@ -33,6 +35,8 @@ function App() {
   const [editingLead, setEditingLead] = useState(null)   // ← added
   const [search, setSearch] = useState("")
   const [filterStatus, setFilterStatus] = useState("")
+  const [sortBy, setSortBy] = useState("")               // ← bonus: sort
+  const [darkMode, setDarkMode] = useState(false)        // ← bonus: dark mode
 
   useEffect(() => {
     // Check localStorage first
@@ -64,12 +68,12 @@ function App() {
     }
   }, [leads, loading])
 
-  // useMemo — only recalculates when leads, search or filterStatus changes
+  // useMemo — only recalculates when leads, search, filterStatus or sortBy changes
   const filteredLeads = useMemo(() => {
 
     const query = search.toLowerCase()
 
-    return leads.filter((lead) => {
+    const filtered = leads.filter((lead) => {
 
       // Check if name or company matches search text
       const matchesSearch =
@@ -84,7 +88,17 @@ function App() {
       return matchesSearch && matchesStatus
     })
 
-  }, [leads, search, filterStatus])
+    // Sort leads by status or date
+    if (sortBy === "status") {
+      const order = ["New", "Contacted", "Follow-up", "Converted", "Lost"]
+      filtered.sort((a, b) => order.indexOf(a.status) - order.indexOf(b.status))
+    } else if (sortBy === "date") {
+      filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+    }
+
+    return filtered
+
+  }, [leads, search, filterStatus, sortBy])
 
   // Open form for adding
   const handleAddClick = () => {
@@ -143,48 +157,96 @@ function App() {
     setDeleteConfirmId(null)
   }
 
+  // Export leads to CSV file
+  const handleExportCSV = () => {
+    const headers = ["Name", "Email", "Phone", "Company", "Source", "Status", "Notes", "Follow-up Date"]
+    const rows = leads.map((lead) => [
+      lead.name,
+      lead.email,
+      lead.phone,
+      lead.company,
+      lead.source,
+      lead.status,
+      lead.notes,
+      lead.followUpDate || ""
+    ])
+    const csv = [headers, ...rows]
+      .map((row) => row.map((val) => `"${val}"`).join(","))
+      .join("\n")
+    const blob = new Blob([csv], { type: "text/csv" })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement("a")
+    a.href = url
+    a.download = "leads.csv"
+    a.click()
+  }
+
   return (
-    <div>
+    <div className={`app-container ${darkMode ? "dark" : ""}`}>
       <Header totalLeads={leads.length} />
 
-      {/* Add Lead Button */}
-      <button onClick={handleAddClick}>+ Add Lead</button>
+      <div className="main-content">
 
-      {/* Search and Filter */}
-      <SearchFilter
-        search={search}
-        filterStatus={filterStatus}
-        onSearchChange={setSearch}
-        onFilterChange={setFilterStatus}
-      />
+        {/* Add Lead Button */}
+        <button className="btn-add" onClick={handleAddClick}>
+          + Add Lead
+        </button>
 
-      {/* Add / Edit Form */}
-      {showForm && (
-        <LeadForm
-          editingLead={editingLead}
-          onSave={handleSave}
-          onClose={handleClose}
+        {/* Export CSV Button */}
+        <button className="btn-export" onClick={handleExportCSV}>
+          ↓ Export CSV
+        </button>
+
+        {/* Dark Mode Toggle */}
+        <button className="btn-dark-mode" onClick={() => setDarkMode(!darkMode)}>
+          {darkMode ? "☀ Light" : "🌙 Dark"}
+        </button>
+
+        {/* Search and Filter */}
+        <SearchFilter
+          search={search}
+          filterStatus={filterStatus}
+          sortBy={sortBy}
+          onSearchChange={setSearch}
+          onFilterChange={setFilterStatus}
+          onSortChange={setSortBy}
         />
-      )}
 
-      {/* Delete Confirmation */}
-      {deleteConfirmId && (
-        <div>
-          <p>Are you sure you want to delete this lead? This cannot be undone.</p>
-          <button onClick={handleDeleteCancel}>Cancel</button>
-          <button onClick={handleDeleteConfirm}>Yes, Delete</button>
-        </div>
-      )}
+        {/* Add / Edit Form */}
+        {showForm && (
+          <LeadForm
+            editingLead={editingLead}
+            onSave={handleSave}
+            onClose={handleClose}
+          />
+        )}
 
-      {loading ? (
-        <p>Loading leads...</p>
-      ) : (
-        <LeadList
-          leads={filteredLeads}
-          onEdit={handleEdit}
-          onDelete={handleDeleteClick}
-        />
-      )}
+        {/* Delete Confirmation */}
+        {deleteConfirmId && (
+          <div className="delete-confirm-box">
+            <p>Are you sure you want to delete this lead? This cannot be undone.</p>
+            <div>
+              <button className="btn-cancel-delete" onClick={handleDeleteCancel}>
+                Cancel
+              </button>
+              <button className="btn-confirm-delete" onClick={handleDeleteConfirm}>
+                Yes, Delete
+              </button>
+            </div>
+          </div>
+        )}
+
+        {loading ? (
+          <p className="loading-text">Loading leads...</p>
+        ) : (
+          <LeadList
+            leads={filteredLeads}
+            onEdit={handleEdit}
+            onDelete={handleDeleteClick}
+          />
+        )}
+
+      </div>
     </div>
   )
 }

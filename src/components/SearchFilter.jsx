@@ -1,11 +1,14 @@
+import "./SearchFilter.css"
+
 const LEAD_STATUSES = ["New", "Contacted", "Follow-up", "Converted", "Lost"]
 
-function SearchFilter({ search, filterStatus, onSearchChange, onFilterChange }) {
+function SearchFilter({ search, filterStatus, sortBy, onSearchChange, onFilterChange, onSortChange }) {
   return (
-    <div>
+    <div className="search-filter-bar">
 
       {/* Search Input */}
       <input
+        className="search-input"
         type="text"
         placeholder="Search by name or company..."
         value={search}
@@ -14,6 +17,7 @@ function SearchFilter({ search, filterStatus, onSearchChange, onFilterChange }) 
 
       {/* Status Filter Dropdown */}
       <select
+        className="filter-select"
         value={filterStatus}
         onChange={(e) => onFilterChange(e.target.value)}
       >
@@ -23,6 +27,17 @@ function SearchFilter({ search, filterStatus, onSearchChange, onFilterChange }) 
             {status}
           </option>
         ))}
+      </select>
+
+      {/* Sort Dropdown */}
+      <select
+        className="filter-select"
+        value={sortBy}
+        onChange={(e) => onSortChange(e.target.value)}
+      >
+        <option value="">Sort By</option>
+        <option value="status">Status</option>
+        <option value="date">Date</option>
       </select>
 
     </div>
